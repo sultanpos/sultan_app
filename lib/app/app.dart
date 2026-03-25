@@ -10,9 +10,9 @@ final _routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: '/',
     routes: [
-      GoRoute(path: '/', builder: (_, __) => const SplashPage()),
-      GoRoute(path: '/login', builder: (_, __) => const LoginPage()),
-      GoRoute(path: '/home', builder: (_, __) => const ServerPage()),
+      GoRoute(path: '/', builder: (context, state) => const SplashPage()),
+      GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
+      GoRoute(path: '/home', builder: (context, state) => const ServerPage()),
     ],
     redirect: (context, state) async {
       // Splash handles its own redirect logic; other routes need auth

@@ -5,7 +5,6 @@ import 'package:sultan/core/services/auth_service.dart';
 import 'package:sultan/core/constants/api_constants.dart';
 import 'package:sultan/features/auth/data/repositories/auth_repository.dart';
 import 'package:sultan/features/auth/domain/models/login_request.dart';
-import 'package:sultan/features/auth/domain/models/login_response.dart';
 
 class MockApiClient extends Mock implements ApiClient {}
 

@@ -180,6 +180,18 @@ Default credentials: username `sultan`, password `sultan`.
 
 ---
 
+## Code Quality Rule
+
+After **every** file modification, always run:
+
+```bash
+flutter analyze --fatal-infos
+```
+
+Fix all reported issues before considering the change done. This catches lint warnings (`unnecessary_underscores`, `unused_import`, etc.) that would fail CI.
+
+---
+
 ## Adding a New Feature Checklist
 
 1. Create `lib/features/<name>/domain/models/<model>.dart` — immutable model with `fromJson`/`toJson`.
@@ -188,3 +200,4 @@ Default credentials: username `sultan`, password `sultan`.
 4. Create `lib/features/<name>/presentation/controllers/<name>_controller.dart` — `Notifier` with sealed state.
 5. Create `lib/features/<name>/presentation/<name>_page.dart` — uses `ResponsivePage` if needed.
 6. Add route to `GoRouter` in `lib/app/app.dart`.
+7. Run `flutter analyze --fatal-infos` and fix any issues.

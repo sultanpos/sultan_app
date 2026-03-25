@@ -17,10 +17,10 @@ Widget _buildApp(MockAuthRepository mockRepo) {
   final router = GoRouter(
     initialLocation: '/login',
     routes: [
-      GoRoute(path: '/login', builder: (_, __) => const LoginPage()),
+      GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
       GoRoute(
         path: '/home',
-        builder: (_, __) => const Scaffold(body: Text('Home')),
+        builder: (context, state) => const Scaffold(body: Text('Home')),
       ),
     ],
   );
