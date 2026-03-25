@@ -1,5 +1,6 @@
 package lekapin.com.sultan
 
+import android.content.Intent
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -14,15 +15,24 @@ class MainActivity : FlutterActivity() {
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, channel).setMethodCallHandler { call, result ->
             when (call.method) {
                 "start" -> {
-                    val dbPath = context.getDatabasePath("sultan.db").absolutePath
-                    context.getDatabasePath("sultan.db").parentFile?.mkdirs()
                     val jwtSecret = call.argument<String>("jwtSecret") ?: "sultan-secret-key"
                     val port = call.argument<Int>("port") ?: 8721
-                    val started = SultanServer.start(dbPath, jwtSecret, port)
-                    result.success(started)
+                    val intent = Intent(this, SultanServerService::class.java).apply {
+                        action = SultanServerService.ACTION_START
+                        putExtra(SultanServerService.EXTRA_JWT_SECRET, jwtSecret)
+                        putExtra(SultanServerService.EXTRA_PORT, port)
+                    }
+                    startForegroundService(intent)
+                    // Give the service a moment to start, then check
+                    android.os.Handler(mainLooper).postDelayed({
+                        result.success(SultanServer.isRunning())
+                    }, 500)
                 }
                 "stop" -> {
-                    SultanServer.stop()
+                    val intent = Intent(this, SultanServerService::class.java).apply {
+                        action = SultanServerService.ACTION_STOP
+                    }
+                    startService(intent)
                     result.success(true)
                 }
                 "isRunning" -> {
