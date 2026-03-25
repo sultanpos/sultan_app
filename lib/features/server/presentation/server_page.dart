@@ -139,6 +139,22 @@ class _ServerPageState extends ConsumerState<ServerPage> {
                 ),
               ),
             ),
+            const SizedBox(height: 32),
+            const Divider(indent: 48, endIndent: 48),
+            const SizedBox(height: 16),
+            Text(
+              'Manage',
+              style: Theme.of(
+                context,
+              ).textTheme.labelMedium?.copyWith(color: Colors.grey),
+            ),
+            const SizedBox(height: 8),
+            ListTile(
+              leading: const Icon(Icons.category_outlined),
+              title: const Text('Categories'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.push('/categories'),
+            ),
           ],
         ),
       ),

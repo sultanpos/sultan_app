@@ -51,14 +51,57 @@ class ApiClient {
     };
   }
 
-  Future<http.Response> _send(Future<http.Response> Function() fn) async {
+  Future<http.Response> _send(
+    Future<http.Response> Function() fn, {
+    required String method,
+    required String path,
+    Object? body,
+  }) async {
+    _logRequest(method, path, body);
     var response = await fn();
+    _logResponse(response);
     if (response.statusCode == 401 && _onUnauthorized != null) {
+      debugPrint(
+        '[ApiClient] 401 — refreshing token and retrying $method $path',
+      );
       await _onUnauthorized!();
-      // Retry once with the fresh token
       response = await fn();
+      _logResponse(response);
     }
     return response;
+  }
+
+  void _logRequest(String method, String path, Object? body) {
+    if (!kDebugMode) return;
+    final buffer = StringBuffer()
+      ..writeln('[ApiClient] --> $method ${ApiConstants.baseUrl}$path');
+    if (body != null) {
+      try {
+        const encoder = JsonEncoder.withIndent('  ');
+        buffer.writeln(encoder.convert(body));
+      } catch (_) {
+        buffer.writeln(body);
+      }
+    }
+    debugPrint(buffer.toString());
+  }
+
+  void _logResponse(http.Response response) {
+    if (!kDebugMode) return;
+    final buffer = StringBuffer()
+      ..writeln(
+        '[ApiClient] <-- ${response.statusCode} ${response.request?.url}',
+      );
+    if (response.body.isNotEmpty) {
+      try {
+        final decoded = jsonDecode(response.body);
+        const encoder = JsonEncoder.withIndent('  ');
+        buffer.writeln(encoder.convert(decoded));
+      } catch (_) {
+        buffer.writeln(response.body);
+      }
+    }
+    debugPrint(buffer.toString());
   }
 
   Future<Map<String, dynamic>> get(
@@ -70,8 +113,29 @@ class ApiClient {
         ApiConstants.uri(path, query),
         headers: await _authHeaders(),
       ),
+      method: 'GET',
+      path: path,
     );
     return _handleResponse(response);
+  }
+
+  Future<List<dynamic>> getList(
+    String path, {
+    Map<String, dynamic>? query,
+  }) async {
+    final response = await _send(
+      () async => _client.get(
+        ApiConstants.uri(path, query),
+        headers: await _authHeaders(),
+      ),
+      method: 'GET',
+      path: path,
+    );
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      if (response.body.isEmpty) return [];
+      return jsonDecode(response.body) as List<dynamic>;
+    }
+    _throwFromResponse(response);
   }
 
   Future<Map<String, dynamic>> post(String path, {Object? body}) async {
@@ -81,6 +145,9 @@ class ApiClient {
         headers: await _authHeaders(),
         body: body != null ? jsonEncode(body) : null,
       ),
+      method: 'POST',
+      path: path,
+      body: body,
     );
     return _handleResponse(response);
   }
@@ -92,6 +159,9 @@ class ApiClient {
         headers: await _authHeaders(),
         body: body != null ? jsonEncode(body) : null,
       ),
+      method: 'PUT',
+      path: path,
+      body: body,
     );
     return _handleResponse(response);
   }
@@ -103,6 +173,9 @@ class ApiClient {
         headers: await _authHeaders(),
         body: body != null ? jsonEncode(body) : null,
       ),
+      method: 'PATCH',
+      path: path,
+      body: body,
     );
     return _handleResponse(response);
   }
@@ -114,6 +187,9 @@ class ApiClient {
         headers: await _authHeaders(),
         body: body != null ? jsonEncode(body) : null,
       ),
+      method: 'DELETE',
+      path: path,
+      body: body,
     );
     if (response.statusCode >= 400) {
       _throwFromResponse(response);
