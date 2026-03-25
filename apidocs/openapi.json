@@ -1,0 +1,3972 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "sultan_web",
+        "description": "",
+        "license": {
+            "name": "AGPL-3.0-only",
+            "identifier": "AGPL-3.0-only"
+        },
+        "version": "25.0.1"
+    },
+    "paths": {
+        "/api/auth": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Login with username and password",
+                "description": "Authenticate a user with their credentials and receive access and refresh tokens.",
+                "operationId": "login",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LoginRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LoginResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request - validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - invalid credentials",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Logout user",
+                "description": "Invalidate a refresh token to log out the user.",
+                "operationId": "logout",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LogoutRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "Logout successful"
+                    },
+                    "400": {
+                        "description": "Bad request - validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - invalid refresh token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/auth/refresh": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Refresh access token",
+                "description": "Use a refresh token to obtain a new access token and refresh token.",
+                "operationId": "refresh",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RefreshTokenRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Token refreshed successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LoginResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request - validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - invalid refresh token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/branch": {
+            "get": {
+                "tags": [
+                    "branch"
+                ],
+                "operationId": "get_all",
+                "responses": {
+                    "200": {
+                        "description": "Branches retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BranchListResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - missing or invalid token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_auth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "branch"
+                ],
+                "operationId": "create",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BranchCreateRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Branch created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BranchCreateResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request - validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - missing or invalid token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_auth": []
+                    }
+                ]
+            }
+        },
+        "/api/branch/{id}": {
+            "get": {
+                "tags": [
+                    "branch"
+                ],
+                "operationId": "get_by_id",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Branch ID to retrieve",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Branch retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BranchResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - missing or invalid token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Branch not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_auth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "branch"
+                ],
+                "operationId": "update",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Branch ID to update",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BranchUpdateRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "Branch updated successfully"
+                    },
+                    "400": {
+                        "description": "Bad request - validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - missing or invalid token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Branch not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_auth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "branch"
+                ],
+                "operationId": "delete_branch",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Branch ID to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Branch deleted successfully"
+                    },
+                    "401": {
+                        "description": "Unauthorized - missing or invalid token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Branch not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_auth": []
+                    }
+                ]
+            }
+        },
+        "/api/category": {
+            "get": {
+                "tags": [
+                    "category"
+                ],
+                "summary": "Get all categories",
+                "description": "Retrieves a list of all categories with their hierarchical structure.\nEach category includes its immediate children. Requires authentication.",
+                "operationId": "get_all",
+                "responses": {
+                    "200": {
+                        "description": "Categories retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/CategoryResponse"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - missing or invalid token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_auth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "category"
+                ],
+                "summary": "Create a new category",
+                "description": "Creates a new category with the provided information. Requires authentication.",
+                "operationId": "create",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CategoryCreateRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Category created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CategoryCreateResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request - validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - missing or invalid token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_auth": []
+                    }
+                ]
+            }
+        },
+        "/api/category/{id}": {
+            "get": {
+                "tags": [
+                    "category"
+                ],
+                "summary": "Get a category by ID",
+                "description": "Retrieves detailed information about a specific category, including its children.\nRequires authentication.",
+                "operationId": "get_by_id",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Category ID to retrieve",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Category retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CategoryResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - missing or invalid token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Category not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_auth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "category"
+                ],
+                "summary": "Update an existing category",
+                "description": "Updates a category's information. All fields in the request body are optional.\nRequires authentication.",
+                "operationId": "update",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Category ID to update",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CategoryUpdateRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "Category updated successfully"
+                    },
+                    "400": {
+                        "description": "Bad request - validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - missing or invalid token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Category not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_auth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "category"
+                ],
+                "summary": "Delete a category",
+                "description": "Soft deletes a category by marking it as deleted. Requires authentication.",
+                "operationId": "delete_category",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Category ID to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Category deleted successfully"
+                    },
+                    "401": {
+                        "description": "Unauthorized - missing or invalid token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Category not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_auth": []
+                    }
+                ]
+            }
+        },
+        "/api/customer": {
+            "get": {
+                "tags": [
+                    "customer"
+                ],
+                "operationId": "get_all",
+                "parameters": [
+                    {
+                        "name": "number",
+                        "in": "query",
+                        "description": "Filter by customer number",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "description": "Filter by customer name (partial match)",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "phone",
+                        "in": "query",
+                        "description": "Filter by phone number",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "description": "Filter by email",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "level",
+                        "in": "query",
+                        "description": "Filter by customer level",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number (default: 1)",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "minimum": 0
+                        }
+                    },
+                    {
+                        "name": "page_size",
+                        "in": "query",
+                        "description": "Page size (default: 20, max: 100)",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "minimum": 0
+                        }
+                    },
+                    {
+                        "name": "order_by",
+                        "in": "query",
+                        "description": "Order by field",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "order_direction",
+                        "in": "query",
+                        "description": "Order direction (asc/desc)",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Customers retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CustomerListResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - missing or invalid token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_auth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "customer"
+                ],
+                "operationId": "create",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CustomerCreateRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Customer created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CustomerCreateResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request - validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - missing or invalid token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_auth": []
+                    }
+                ]
+            }
+        },
+        "/api/customer/{id}": {
+            "get": {
+                "tags": [
+                    "customer"
+                ],
+                "operationId": "get_by_id",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Customer ID to retrieve",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Customer retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CustomerResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - missing or invalid token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Customer not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_auth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "customer"
+                ],
+                "operationId": "update",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Customer ID to update",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CustomerUpdateRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "Customer updated successfully"
+                    },
+                    "400": {
+                        "description": "Bad request - validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - missing or invalid token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Customer not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_auth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "customer"
+                ],
+                "operationId": "delete_customer",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Customer ID to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Customer deleted successfully"
+                    },
+                    "401": {
+                        "description": "Unauthorized - missing or invalid token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Customer not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_auth": []
+                    }
+                ]
+            }
+        },
+        "/api/product": {
+            "post": {
+                "tags": [
+                    "product"
+                ],
+                "summary": "Create a new product",
+                "description": "Creates a new product with optional variants, sell prices, and stocks. Requires authentication.",
+                "operationId": "create",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ProductFullCreateRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Product created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProductCreateResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request - validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - missing or invalid token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_auth": []
+                    }
+                ]
+            }
+        },
+        "/api/product/{id}": {
+            "get": {
+                "tags": [
+                    "product"
+                ],
+                "summary": "Get a product by ID",
+                "description": "Retrieves a single product by its ID. Requires authentication.",
+                "operationId": "get_by_id",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Product ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Product retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProductResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - missing or invalid token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Product not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_auth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "product"
+                ],
+                "summary": "Delete a product",
+                "description": "Soft deletes a product and all its variants by ID. Requires authentication.",
+                "operationId": "delete_product",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Product ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Product deleted successfully"
+                    },
+                    "401": {
+                        "description": "Unauthorized - missing or invalid token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Product not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_auth": []
+                    }
+                ]
+            }
+        },
+        "/api/supplier": {
+            "get": {
+                "tags": [
+                    "supplier"
+                ],
+                "summary": "Get all suppliers",
+                "description": "Retrieves a list of suppliers with optional filtering and pagination. Requires authentication.",
+                "operationId": "get_many",
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "code",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "phone",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "npwp",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number (default: 1)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "minimum": 0
+                        }
+                    },
+                    {
+                        "name": "page_size",
+                        "in": "query",
+                        "description": "Page size (default: 20, max: 100)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "minimum": 0
+                        }
+                    },
+                    {
+                        "name": "order_by",
+                        "in": "query",
+                        "description": "Order by field",
+                        "required": false,
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "order_direction",
+                        "in": "query",
+                        "description": "Order direction (asc/desc)",
+                        "required": false,
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Suppliers retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ListResponse_SupplierResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - missing or invalid token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_auth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "supplier"
+                ],
+                "summary": "Create a new supplier",
+                "description": "Creates a new supplier with the provided information. Requires authentication.",
+                "operationId": "create",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SupplierCreateRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Supplier created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SupplierCreateResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request - validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - missing or invalid token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_auth": []
+                    }
+                ]
+            }
+        },
+        "/api/supplier/{id}": {
+            "get": {
+                "tags": [
+                    "supplier"
+                ],
+                "summary": "Get a supplier by ID",
+                "description": "Retrieves a single supplier by its ID. Requires authentication.",
+                "operationId": "get_one",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Supplier ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Supplier retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SupplierResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - missing or invalid token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Supplier not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_auth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "supplier"
+                ],
+                "summary": "Update an existing supplier",
+                "description": "Updates a supplier's information by ID. Requires authentication.",
+                "operationId": "update",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Supplier ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SupplierUpdateRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "Supplier updated successfully"
+                    },
+                    "400": {
+                        "description": "Bad request - validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - missing or invalid token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Supplier not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_auth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "supplier"
+                ],
+                "summary": "Delete a supplier",
+                "description": "Deletes a supplier by ID. Requires authentication.",
+                "operationId": "delete_supplier",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Supplier ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Supplier deleted successfully"
+                    },
+                    "401": {
+                        "description": "Unauthorized - missing or invalid token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Supplier not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_auth": []
+                    }
+                ]
+            }
+        },
+        "/api/user": {
+            "get": {
+                "tags": [
+                    "user"
+                ],
+                "summary": "Get all users\nGet all users",
+                "description": "Retrieves a list of all users with optional filtering and pagination. Requires authentication.",
+                "operationId": "get_all",
+                "parameters": [
+                    {
+                        "name": "username",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "minimum": 0
+                        }
+                    },
+                    {
+                        "name": "page_size",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "minimum": 0
+                        }
+                    },
+                    {
+                        "name": "order_by",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "order_direction",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of users",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserListResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - missing or invalid token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_auth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "user"
+                ],
+                "summary": "Create a new user",
+                "description": "Creates a new user with the provided information. Requires authentication.",
+                "operationId": "create",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UserCreateRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "User created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserCreateResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request - validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - missing or invalid token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_auth": []
+                    }
+                ]
+            }
+        },
+        "/api/user/mypassword": {
+            "patch": {
+                "tags": [
+                    "user"
+                ],
+                "summary": "Change my password (self-service)",
+                "description": "Allows authenticated users to change their own password by providing the old password.\nRequires authentication.",
+                "operationId": "change_my_password",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "User ID (must match authenticated user)",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ChangeMyPasswordRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "Password changed successfully"
+                    },
+                    "400": {
+                        "description": "Bad request - validation error or wrong old password",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - missing or invalid token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_auth": []
+                    }
+                ]
+            }
+        },
+        "/api/user/{id}": {
+            "get": {
+                "tags": [
+                    "user"
+                ],
+                "summary": "Get a user by ID",
+                "description": "Retrieves a single user by their ID. Requires authentication.",
+                "operationId": "get_by_id",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "User ID to retrieve",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - missing or invalid token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_auth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "user"
+                ],
+                "summary": "Update an existing user",
+                "description": "Updates a user's information. All fields in the request body are optional.\nRequires authentication.",
+                "operationId": "update",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "User ID to update",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UserUpdateRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "User updated successfully"
+                    },
+                    "400": {
+                        "description": "Bad request - validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - missing or invalid token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_auth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "user"
+                ],
+                "summary": "Delete a user",
+                "description": "Soft deletes a user by ID. Requires authentication.",
+                "operationId": "delete_user",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "User ID to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "User deleted successfully"
+                    },
+                    "401": {
+                        "description": "Unauthorized - missing or invalid token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_auth": []
+                    }
+                ]
+            }
+        },
+        "/api/user/{id}/password": {
+            "patch": {
+                "tags": [
+                    "user"
+                ],
+                "summary": "Reset user password (admin)",
+                "description": "Resets a user's password. This is an admin operation. Requires authentication.",
+                "operationId": "reset_password",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "User ID to reset password for",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ResetPasswordRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "Password reset successfully"
+                    },
+                    "400": {
+                        "description": "Bad request - validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - missing or invalid token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_auth": []
+                    }
+                ]
+            }
+        },
+        "/api/user/{id}/permissions": {
+            "get": {
+                "tags": [
+                    "user"
+                ],
+                "summary": "Get user permissions",
+                "description": "Retrieves all permissions assigned to a specific user. Requires authentication.",
+                "operationId": "get_permission_by_user_id",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "User ID to get permissions for",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of user permissions",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/UserPermissionResponse"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - missing or invalid token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_auth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "BranchCreateRequest": {
+                "type": "object",
+                "required": [
+                    "name",
+                    "code"
+                ],
+                "properties": {
+                    "address": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "code": {
+                        "type": "string",
+                        "example": "SULTAN"
+                    },
+                    "image": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "is_main": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Sultan Branch"
+                    },
+                    "npwp": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "phone": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                }
+            },
+            "BranchCreateResponse": {
+                "type": "object",
+                "required": [
+                    "id"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "1234567890"
+                    }
+                }
+            },
+            "BranchListResponse": {
+                "type": "object",
+                "required": [
+                    "branches"
+                ],
+                "properties": {
+                    "branches": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/BranchResponse"
+                        }
+                    }
+                }
+            },
+            "BranchResponse": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "created_at",
+                    "updated_at",
+                    "is_main",
+                    "name",
+                    "code"
+                ],
+                "properties": {
+                    "address": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "code": {
+                        "type": "string"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "id": {
+                        "type": "string",
+                        "example": "1234567890"
+                    },
+                    "image": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "is_main": {
+                        "type": "boolean"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "npwp": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "phone": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            },
+            "BranchUpdateRequest": {
+                "type": "object",
+                "properties": {
+                    "address": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "code": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "example": "SULTAN"
+                    },
+                    "image": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "is_main": {
+                        "type": [
+                            "boolean",
+                            "null"
+                        ]
+                    },
+                    "name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "example": "Sultan Branch"
+                    },
+                    "npwp": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "phone": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                }
+            },
+            "CategoryChildResponse": {
+                "type": "object",
+                "description": "Child category response (simplified, no recursion)",
+                "required": [
+                    "id",
+                    "name"
+                ],
+                "properties": {
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Category description",
+                        "example": "Laptops and Notebooks"
+                    },
+                    "id": {
+                        "type": "string",
+                        "example": "1234567890"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "Category name",
+                        "example": "Laptops"
+                    }
+                }
+            },
+            "CategoryCreateRequest": {
+                "type": "object",
+                "description": "Request to create a new category",
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Category description (optional)",
+                        "example": "Electronic devices and accessories"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "Category name",
+                        "example": "Electronics"
+                    },
+                    "parent_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int64",
+                        "description": "Parent category ID (optional, for subcategories)",
+                        "example": 1
+                    }
+                }
+            },
+            "CategoryCreateResponse": {
+                "type": "object",
+                "description": "Response after creating a category",
+                "required": [
+                    "id"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "Category ID",
+                        "example": "1234567890"
+                    }
+                }
+            },
+            "CategoryResponse": {
+                "type": "object",
+                "description": "Category response with hierarchical structure",
+                "required": [
+                    "id",
+                    "name"
+                ],
+                "properties": {
+                    "children": {
+                        "type": [
+                            "array",
+                            "null"
+                        ],
+                        "items": {
+                            "$ref": "#/components/schemas/CategoryChildResponse"
+                        },
+                        "description": "Child categories (one level deep)"
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Category description",
+                        "example": "Electronic devices and accessories"
+                    },
+                    "id": {
+                        "type": "string",
+                        "example": "1234567890"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "Category name",
+                        "example": "Electronics"
+                    }
+                }
+            },
+            "CategoryUpdateRequest": {
+                "type": "object",
+                "description": "Request to update a new category",
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Category description (optional)",
+                        "example": "Electronic devices and accessories"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "Category name",
+                        "example": "Electronics"
+                    },
+                    "parent_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Parent category ID (optional, for subcategories)",
+                        "example": "1234567890"
+                    }
+                }
+            },
+            "ChangeMyPasswordRequest": {
+                "type": "object",
+                "required": [
+                    "old_password",
+                    "new_password"
+                ],
+                "properties": {
+                    "new_password": {
+                        "type": "string",
+                        "example": "password"
+                    },
+                    "old_password": {
+                        "type": "string",
+                        "example": "password"
+                    }
+                }
+            },
+            "CustomerCreateRequest": {
+                "type": "object",
+                "required": [
+                    "name",
+                    "level"
+                ],
+                "properties": {
+                    "address": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "email": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "level": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "metadata": {},
+                    "name": {
+                        "type": "string",
+                        "example": "CV. Sultan Pos"
+                    },
+                    "number": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "phone": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                }
+            },
+            "CustomerCreateResponse": {
+                "type": "object",
+                "required": [
+                    "id"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "1234567890"
+                    }
+                }
+            },
+            "CustomerListResponse": {
+                "type": "object",
+                "required": [
+                    "customers"
+                ],
+                "properties": {
+                    "customers": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CustomerResponse"
+                        }
+                    }
+                }
+            },
+            "CustomerResponse": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "created_at",
+                    "updated_at",
+                    "number",
+                    "name",
+                    "level"
+                ],
+                "properties": {
+                    "address": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "email": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "id": {
+                        "type": "string",
+                        "example": "1234567890"
+                    },
+                    "level": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "metadata": {},
+                    "name": {
+                        "type": "string"
+                    },
+                    "number": {
+                        "type": "string"
+                    },
+                    "phone": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            },
+            "CustomerUpdateRequest": {
+                "type": "object",
+                "properties": {
+                    "address": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "email": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "level": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int32"
+                    },
+                    "metadata": {},
+                    "name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "example": "CV. Sultan Pos"
+                    },
+                    "number": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "phone": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                }
+            },
+            "ErrorResponse": {
+                "type": "object",
+                "description": "Standard error response",
+                "required": [
+                    "error"
+                ],
+                "properties": {
+                    "error": {
+                        "type": "string",
+                        "description": "Error message describing what went wrong",
+                        "example": "Error message"
+                    }
+                }
+            },
+            "ListResponse_SupplierResponse": {
+                "type": "object",
+                "required": [
+                    "data"
+                ],
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "required": [
+                                "id",
+                                "created_at",
+                                "updated_at",
+                                "name"
+                            ],
+                            "properties": {
+                                "address": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "code": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "created_at": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                },
+                                "email": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "id": {
+                                    "type": "string",
+                                    "example": "1234567890"
+                                },
+                                "metadata": {},
+                                "name": {
+                                    "type": "string"
+                                },
+                                "npwp": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "npwp_name": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "phone": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "updated_at": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "LoginRequest": {
+                "type": "object",
+                "required": [
+                    "username",
+                    "password"
+                ],
+                "properties": {
+                    "password": {
+                        "type": "string",
+                        "example": "password123"
+                    },
+                    "username": {
+                        "type": "string",
+                        "example": "admin"
+                    }
+                }
+            },
+            "LoginResponse": {
+                "type": "object",
+                "required": [
+                    "access_token",
+                    "refresh_token"
+                ],
+                "properties": {
+                    "access_token": {
+                        "type": "string",
+                        "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    },
+                    "refresh_token": {
+                        "type": "string",
+                        "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    }
+                }
+            },
+            "LogoutRequest": {
+                "type": "object",
+                "required": [
+                    "refresh_token"
+                ],
+                "properties": {
+                    "refresh_token": {
+                        "type": "string",
+                        "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    }
+                }
+            },
+            "PermissionCreateRequest": {
+                "type": "object",
+                "properties": {
+                    "action": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "branch_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "example": "1234567890"
+                    },
+                    "resource": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                }
+            },
+            "ProductCreateRequest": {
+                "type": "object",
+                "description": "Request to create a new product",
+                "properties": {
+                    "buyable": {
+                        "type": "boolean",
+                        "description": "Whether the product can be purchased",
+                        "default": false,
+                        "example": true
+                    },
+                    "category_ids": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "description": "Category IDs this product belongs to",
+                        "example": [
+                            "1234567890",
+                            "9876543210"
+                        ],
+                        "default": []
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Product description (optional)",
+                        "default": null,
+                        "example": "High-performance gaming laptop"
+                    },
+                    "editable_price": {
+                        "type": "boolean",
+                        "description": "Whether the price can be edited during sale",
+                        "default": false,
+                        "example": false
+                    },
+                    "has_variant": {
+                        "type": "boolean",
+                        "description": "Whether the product has variants",
+                        "default": false,
+                        "example": true
+                    },
+                    "main_image": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Main product image URL (optional)",
+                        "default": null,
+                        "example": "https://example.com/images/laptop.jpg"
+                    },
+                    "metadata": {
+                        "description": "Additional metadata (optional)"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "Product name",
+                        "default": "",
+                        "example": "Laptop ASUS ROG"
+                    },
+                    "product_type": {
+                        "type": "string",
+                        "description": "Product type (e.g., \"goods\", \"service\")",
+                        "default": "",
+                        "example": "goods"
+                    },
+                    "sellable": {
+                        "type": "boolean",
+                        "description": "Whether the product can be sold",
+                        "default": false,
+                        "example": true
+                    }
+                }
+            },
+            "ProductCreateResponse": {
+                "type": "object",
+                "description": "Response after creating a product",
+                "required": [
+                    "id"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "Product ID",
+                        "example": "1234567890"
+                    }
+                }
+            },
+            "ProductFullCreateRequest": {
+                "type": "object",
+                "description": "Request to create a complete product with variants, prices, and stocks",
+                "required": [
+                    "product"
+                ],
+                "properties": {
+                    "categories": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "description": "Category IDs (can also be specified in product.category_ids)",
+                        "example": [
+                            "1234567890",
+                            "9876543210"
+                        ]
+                    },
+                    "product": {
+                        "$ref": "#/components/schemas/ProductCreateRequest",
+                        "description": "Product details"
+                    },
+                    "variants": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ProductVariantFullCreateRequest"
+                        },
+                        "description": "List of product variants with prices and stocks"
+                    }
+                }
+            },
+            "ProductResponse": {
+                "type": "object",
+                "description": "Product response",
+                "required": [
+                    "id",
+                    "created_at",
+                    "updated_at",
+                    "name",
+                    "product_type",
+                    "sellable",
+                    "buyable",
+                    "editable_price",
+                    "has_variant",
+                    "categories",
+                    "variants"
+                ],
+                "properties": {
+                    "buyable": {
+                        "type": "boolean",
+                        "description": "Whether the product can be purchased",
+                        "example": true
+                    },
+                    "categories": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CategoryChildResponse"
+                        },
+                        "description": "Categories this product belongs to"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Creation timestamp"
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Product description",
+                        "example": "High-performance gaming laptop"
+                    },
+                    "editable_price": {
+                        "type": "boolean",
+                        "description": "Whether the price can be edited during sale",
+                        "example": false
+                    },
+                    "has_variant": {
+                        "type": "boolean",
+                        "description": "Whether the product has variants",
+                        "example": true
+                    },
+                    "id": {
+                        "type": "string",
+                        "description": "Product ID",
+                        "example": "1234567890"
+                    },
+                    "main_image": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Main product image URL",
+                        "example": "https://example.com/images/laptop.jpg"
+                    },
+                    "metadata": {
+                        "description": "Additional metadata"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "Product name",
+                        "example": "Laptop ASUS ROG"
+                    },
+                    "product_type": {
+                        "type": "string",
+                        "description": "Product type",
+                        "example": "goods"
+                    },
+                    "sellable": {
+                        "type": "boolean",
+                        "description": "Whether the product can be sold",
+                        "example": true
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Last update timestamp"
+                    },
+                    "variants": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ProductVariantResponse"
+                        },
+                        "description": "Product variants"
+                    }
+                }
+            },
+            "ProductVariantCreateRequest": {
+                "type": "object",
+                "description": "Request to create a new product variant",
+                "required": [
+                    "product_id"
+                ],
+                "properties": {
+                    "barcode": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Variant barcode (optional)",
+                        "example": "8901234567890"
+                    },
+                    "metadata": {
+                        "description": "Additional metadata (optional)"
+                    },
+                    "name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Variant name (optional, e.g., \"Red - Large\")",
+                        "example": "Black - 16GB RAM"
+                    },
+                    "product_id": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Product ID this variant belongs to",
+                        "example": "1234567890"
+                    }
+                }
+            },
+            "ProductVariantCreateResponse": {
+                "type": "object",
+                "description": "Response after creating a product variant",
+                "required": [
+                    "id"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "Variant ID",
+                        "example": "1234567890"
+                    }
+                }
+            },
+            "ProductVariantFullCreateRequest": {
+                "type": "object",
+                "description": "Request to create a product variant with sell prices and stocks",
+                "required": [
+                    "variant"
+                ],
+                "properties": {
+                    "sell_prices": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SellPriceFullCreateRequest"
+                        },
+                        "description": "List of sell prices with discounts"
+                    },
+                    "stocks": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/StockCreateRequest"
+                        },
+                        "description": "List of stock records"
+                    },
+                    "variant": {
+                        "$ref": "#/components/schemas/ProductVariantCreateRequest",
+                        "description": "Variant details"
+                    }
+                }
+            },
+            "ProductVariantResponse": {
+                "type": "object",
+                "description": "Product variant response",
+                "required": [
+                    "id",
+                    "created_at",
+                    "updated_at",
+                    "sell_prices"
+                ],
+                "properties": {
+                    "barcode": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Variant barcode",
+                        "example": "8901234567890"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Creation timestamp"
+                    },
+                    "id": {
+                        "type": "string",
+                        "description": "Variant ID",
+                        "example": "1234567890"
+                    },
+                    "metadata": {
+                        "description": "Additional metadata"
+                    },
+                    "name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Variant name",
+                        "example": "Black - 16GB RAM"
+                    },
+                    "sell_prices": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SellPriceResponse"
+                        },
+                        "description": "Sell prices for this variant"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Last update timestamp"
+                    }
+                }
+            },
+            "RefreshTokenRequest": {
+                "type": "object",
+                "required": [
+                    "refresh_token"
+                ],
+                "properties": {
+                    "refresh_token": {
+                        "type": "string",
+                        "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    }
+                }
+            },
+            "ResetPasswordRequest": {
+                "type": "object",
+                "required": [
+                    "new_password"
+                ],
+                "properties": {
+                    "new_password": {
+                        "type": "string",
+                        "example": "password"
+                    }
+                }
+            },
+            "SellDiscountCreateRequest": {
+                "type": "object",
+                "description": "Request to create a sell discount",
+                "required": [
+                    "price_id",
+                    "quantity",
+                    "discount_formula"
+                ],
+                "properties": {
+                    "customer_level": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int64",
+                        "description": "Customer level this discount applies to (optional)",
+                        "example": 1
+                    },
+                    "discount_formula": {
+                        "type": "string",
+                        "description": "Discount formula (e.g., \"price * 0.9\" for 10% off)",
+                        "example": "price * 0.9"
+                    },
+                    "metadata": {
+                        "description": "Additional metadata"
+                    },
+                    "price_id": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Price ID this discount belongs to",
+                        "example": "1234567890"
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Minimum quantity for this discount",
+                        "example": 10
+                    }
+                }
+            },
+            "SellDiscountResponse": {
+                "type": "object",
+                "description": "Sell discount response",
+                "required": [
+                    "id",
+                    "created_at",
+                    "updated_at",
+                    "sell_price_id",
+                    "quantity",
+                    "calculated_price"
+                ],
+                "properties": {
+                    "calculated_price": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Calculated price after applying the discount"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Creation timestamp"
+                    },
+                    "customer_level": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int64",
+                        "description": "Customer level this discount applies to"
+                    },
+                    "discount_formula": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Discount formula (e.g., \"price * 0.9\" for 10% off)",
+                        "example": "price * 0.9"
+                    },
+                    "id": {
+                        "type": "string",
+                        "description": "Discount ID",
+                        "example": "1234567890"
+                    },
+                    "metadata": {
+                        "description": "Additional metadata"
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Minimum quantity for this discount"
+                    },
+                    "sell_price_id": {
+                        "type": "string",
+                        "description": "Sell price ID this discount belongs to",
+                        "example": "1234567890"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Last update timestamp"
+                    }
+                }
+            },
+            "SellPriceCreateRequest": {
+                "type": "object",
+                "description": "Request to create a sell price",
+                "required": [
+                    "product_variant_id",
+                    "uom_id",
+                    "quantity",
+                    "price"
+                ],
+                "properties": {
+                    "branch_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int64",
+                        "description": "Branch ID (optional, null means all branches)",
+                        "example": "1234567890"
+                    },
+                    "metadata": {
+                        "description": "Additional metadata"
+                    },
+                    "price": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Price in cents/smallest currency unit",
+                        "example": 150000
+                    },
+                    "product_variant_id": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Product variant ID",
+                        "example": "1234567890"
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Quantity for this price point",
+                        "example": 1
+                    },
+                    "uom_id": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Unit of measure ID",
+                        "example": "1234567890"
+                    }
+                }
+            },
+            "SellPriceFullCreateRequest": {
+                "type": "object",
+                "description": "Request to create a sell price with discounts",
+                "required": [
+                    "sell_price"
+                ],
+                "properties": {
+                    "discounts": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SellDiscountCreateRequest"
+                        },
+                        "description": "List of discounts for this price"
+                    },
+                    "sell_price": {
+                        "$ref": "#/components/schemas/SellPriceCreateRequest",
+                        "description": "Sell price details"
+                    }
+                }
+            },
+            "SellPriceResponse": {
+                "type": "object",
+                "description": "Sell price response",
+                "required": [
+                    "id",
+                    "created_at",
+                    "updated_at",
+                    "uom_id",
+                    "quantity",
+                    "price",
+                    "discounts"
+                ],
+                "properties": {
+                    "branch_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Branch ID (null means all branches)",
+                        "example": "1234567890"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Creation timestamp"
+                    },
+                    "discounts": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SellDiscountResponse"
+                        },
+                        "description": "Discounts for this price"
+                    },
+                    "id": {
+                        "type": "string",
+                        "description": "Price ID",
+                        "example": "1234567890"
+                    },
+                    "metadata": {
+                        "description": "Additional metadata"
+                    },
+                    "price": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Price in cents/smallest currency unit"
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Quantity for this price point"
+                    },
+                    "uom_id": {
+                        "type": "string",
+                        "description": "Unit of measure ID",
+                        "example": "1234567890"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Last update timestamp"
+                    }
+                }
+            },
+            "StockCreateRequest": {
+                "type": "object",
+                "description": "Request to create stock for a product variant",
+                "required": [
+                    "branch_id",
+                    "product_variant_id",
+                    "quantity"
+                ],
+                "properties": {
+                    "branch_id": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Branch ID where this stock is located",
+                        "example": "1234567890"
+                    },
+                    "last_buy_price": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int64",
+                        "description": "Last purchase price in cents (optional)",
+                        "example": 120000
+                    },
+                    "max_stock": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int64",
+                        "description": "Maximum stock level (optional)",
+                        "example": 1000
+                    },
+                    "metadata": {
+                        "description": "Additional metadata"
+                    },
+                    "min_stock": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int64",
+                        "description": "Minimum stock level (optional)",
+                        "example": 10
+                    },
+                    "product_variant_id": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Product variant ID",
+                        "example": "1234567890"
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Current quantity",
+                        "example": 100
+                    }
+                }
+            },
+            "SupplierCreateRequest": {
+                "type": "object",
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "address": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "code": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "email": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "metadata": {},
+                    "name": {
+                        "type": "string",
+                        "example": "CV. Sultan Pos"
+                    },
+                    "npwp": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "npwp_name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "phone": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                }
+            },
+            "SupplierCreateResponse": {
+                "type": "object",
+                "required": [
+                    "id"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "1234567890"
+                    }
+                }
+            },
+            "SupplierQueryParams": {
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "example": "SUP001"
+                    },
+                    "email": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "example": "supplier@example.com"
+                    },
+                    "name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "example": "CV. Sultan"
+                    },
+                    "npwp": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "example": "12.345.678.9-012.345"
+                    },
+                    "order_by": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Order by field",
+                        "example": "name"
+                    },
+                    "order_direction": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Order direction (asc/desc)",
+                        "example": "asc"
+                    },
+                    "page": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "Page number (default: 1)",
+                        "default": 1,
+                        "example": 1,
+                        "minimum": 0
+                    },
+                    "page_size": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "Page size (default: 20, max: 100)",
+                        "default": 20,
+                        "example": 20,
+                        "minimum": 0
+                    },
+                    "phone": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "example": "081234567890"
+                    }
+                }
+            },
+            "SupplierResponse": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "created_at",
+                    "updated_at",
+                    "name"
+                ],
+                "properties": {
+                    "address": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "code": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "email": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "id": {
+                        "type": "string",
+                        "example": "1234567890"
+                    },
+                    "metadata": {},
+                    "name": {
+                        "type": "string"
+                    },
+                    "npwp": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "npwp_name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "phone": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            },
+            "SupplierUpdateRequest": {
+                "type": "object",
+                "properties": {
+                    "address": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "code": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "email": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "metadata": {},
+                    "name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "npwp": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "npwp_name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "phone": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                }
+            },
+            "UserCreateRequest": {
+                "type": "object",
+                "properties": {
+                    "address": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "email": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Sultan"
+                    },
+                    "password": {
+                        "type": "string",
+                        "example": "sultan"
+                    },
+                    "permissions": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/PermissionCreateRequest"
+                        }
+                    },
+                    "phone": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "photo": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "pin": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "username": {
+                        "type": "string",
+                        "example": "sultan"
+                    }
+                }
+            },
+            "UserCreateResponse": {
+                "type": "object",
+                "required": [
+                    "id"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "1234567890"
+                    }
+                }
+            },
+            "UserListResponse": {
+                "type": "object",
+                "required": [
+                    "data"
+                ],
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/UserResponse"
+                        }
+                    }
+                }
+            },
+            "UserPermissionResponse": {
+                "type": "object",
+                "required": [
+                    "resource",
+                    "action"
+                ],
+                "properties": {
+                    "action": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "branch_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int64"
+                    },
+                    "resource": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                }
+            },
+            "UserResponse": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "created_at",
+                    "updated_at",
+                    "username",
+                    "password",
+                    "name"
+                ],
+                "properties": {
+                    "address": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "email": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "id": {
+                        "type": "string",
+                        "example": "1234567890"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string"
+                    },
+                    "phone": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "photo": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "pin": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "username": {
+                        "type": "string"
+                    }
+                }
+            },
+            "UserUpdateRequest": {
+                "type": "object",
+                "properties": {
+                    "address": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "email": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "example": "Sultan"
+                    },
+                    "permissions": {
+                        "type": [
+                            "array",
+                            "null"
+                        ],
+                        "items": {
+                            "$ref": "#/components/schemas/PermissionCreateRequest"
+                        }
+                    },
+                    "phone": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "photo": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "pin": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "username": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "example": "sultan"
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "bearer_auth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }
+    },
+    "security": [
+        {
+            "bearer_auth": []
+        }
+    ],
+    "tags": [
+        {
+            "name": "auth",
+            "description": "Authentication endpoints"
+        },
+        {
+            "name": "branch",
+            "description": "Branch management endpoints"
+        },
+        {
+            "name": "category",
+            "description": "Category management endpoints"
+        },
+        {
+            "name": "customer",
+            "description": "Customer management endpoints"
+        },
+        {
+            "name": "supplier",
+            "description": "Supplier management endpoints"
+        },
+        {
+            "name": "user",
+            "description": "User management endpoints"
+        },
+        {
+            "name": "product",
+            "description": "Product management endpoints"
+        }
+    ]
+}
