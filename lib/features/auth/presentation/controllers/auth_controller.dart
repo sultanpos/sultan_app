@@ -2,6 +2,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/repositories/auth_repository.dart';
 import '../../domain/models/login_request.dart';
 
+final authRepositoryProvider = Provider<AuthRepository>(
+  (ref) => AuthRepository(),
+);
+
 sealed class AuthState {
   const AuthState();
 }
@@ -28,20 +32,15 @@ class AuthError extends AuthState {
 }
 
 class AuthController extends Notifier<AuthState> {
-  late final AuthRepository _repository;
-
   @override
-  AuthState build() {
-    _repository = AuthRepository();
-    return const AuthInitial();
-  }
+  AuthState build() => const AuthInitial();
 
   Future<void> login(String username, String password) async {
     state = const AuthLoading();
     try {
-      await _repository.login(
-        LoginRequest(username: username, password: password),
-      );
+      await ref
+          .read(authRepositoryProvider)
+          .login(LoginRequest(username: username, password: password));
       state = const AuthAuthenticated();
     } catch (e) {
       state = AuthError(_parseError(e));
@@ -50,7 +49,7 @@ class AuthController extends Notifier<AuthState> {
 
   Future<void> logout() async {
     state = const AuthLoading();
-    await _repository.logout();
+    await ref.read(authRepositoryProvider).logout();
     state = const AuthUnauthenticated();
   }
 

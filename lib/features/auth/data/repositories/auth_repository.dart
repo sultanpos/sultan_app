@@ -5,10 +5,12 @@ import '../../domain/models/login_request.dart';
 import '../../domain/models/login_response.dart';
 
 class AuthRepository {
-  final _client = ApiClient.instance;
-  final _authService = AuthService.instance;
+  final ApiClient _client;
+  final AuthService _authService;
 
-  AuthRepository() {
+  AuthRepository({ApiClient? apiClient, AuthService? authService})
+    : _client = apiClient ?? ApiClient.instance,
+      _authService = authService ?? AuthService.instance {
     // Wire the 401 handler so the API client can silently refresh the token
     _client.setOnUnauthorized(_refresh);
   }

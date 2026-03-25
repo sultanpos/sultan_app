@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../constants/api_constants.dart';
 import 'auth_service.dart';
@@ -15,12 +16,23 @@ class ApiException implements Exception {
 }
 
 class ApiClient {
-  ApiClient._();
+  ApiClient._([http.Client? httpClient, AuthService? authService])
+    : _client = httpClient ?? http.Client(),
+      _authService = authService ?? AuthService.instance;
 
   static final _instance = ApiClient._();
   static ApiClient get instance => _instance;
 
-  final _client = http.Client();
+  final http.Client _client;
+  final AuthService _authService;
+
+  /// Creates a non-singleton instance with injected dependencies.
+  /// Use only in tests.
+  @visibleForTesting
+  static ApiClient withHttpClient(
+    http.Client httpClient, {
+    AuthService? authService,
+  }) => ApiClient._(httpClient, authService);
 
   // Called by the auth repository to inject a refresh callback after init,
   // avoiding a circular dependency.
@@ -31,7 +43,7 @@ class ApiClient {
   }
 
   Future<Map<String, String>> _authHeaders() async {
-    final token = await AuthService.instance.getAccessToken();
+    final token = await _authService.getAccessToken();
     return {
       HttpHeaders.contentTypeHeader: 'application/json',
       HttpHeaders.acceptHeader: 'application/json',
