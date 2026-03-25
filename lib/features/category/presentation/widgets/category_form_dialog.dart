@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../domain/models/category.dart';
-import '../controllers/category_controller.dart';
+import 'package:sultan/features/category/domain/models/category.dart';
+import 'package:sultan/features/category/presentation/controllers/category_controller.dart';
 
 class CategoryFormDialog extends ConsumerStatefulWidget {
   final Category? existing;

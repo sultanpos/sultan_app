@@ -1,6 +1,6 @@
-import '../../../../core/constants/api_constants.dart';
-import '../../../../core/services/api_client.dart';
-import '../../domain/models/category.dart';
+import 'package:sultan/core/constants/api_constants.dart';
+import 'package:sultan/core/services/api_client.dart';
+import 'package:sultan/features/category/domain/models/category.dart';
 
 class CategoryRepository {
   final ApiClient _client;

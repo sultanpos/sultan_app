@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/widgets/responsive_page.dart';
-import '../../category/domain/models/category.dart';
-import 'controllers/category_controller.dart';
-import 'widgets/category_form_dialog.dart';
+import 'package:sultan/core/widgets/responsive_page.dart';
+import 'package:sultan/features/category/domain/models/category.dart';
+import 'package:sultan/features/category/presentation/controllers/category_controller.dart';
+import 'package:sultan/features/category/presentation/widgets/category_form_dialog.dart';
 
 class CategoryPage extends ConsumerStatefulWidget {
   const CategoryPage({super.key});
@@ -111,7 +111,7 @@ class _CategoryListView extends StatelessWidget {
   final void Function(Category) onEdit;
   final void Function(Category) onDelete;
   final void Function(Category) onAddChild;
-  final VoidCallback onRefresh;
+  final Future<void> Function() onRefresh;
   final bool desktopLayout;
 
   const _CategoryListView({

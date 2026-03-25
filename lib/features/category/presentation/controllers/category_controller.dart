@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../data/repositories/category_repository.dart';
-import '../../domain/models/category.dart';
+import 'package:sultan/core/services/api_client.dart';
+import 'package:sultan/features/category/data/repositories/category_repository.dart';
+import 'package:sultan/features/category/domain/models/category.dart';
 
 final categoryRepositoryProvider = Provider<CategoryRepository>(
   (ref) => CategoryRepository(),
@@ -39,8 +42,12 @@ class CategoryController extends Notifier<CategoryState> {
     try {
       final categories = await _repo.getAll();
       state = CategoryLoaded(categories);
-    } catch (e) {
-      state = CategoryError(_parseError(e));
+    } on ApiException catch (e) {
+      state = CategoryError(_messageForApiException(e));
+    } on SocketException {
+      state = const CategoryError('Cannot connect to server.');
+    } catch (_) {
+      state = const CategoryError('An error occurred. Please try again.');
     }
   }
 
@@ -49,8 +56,14 @@ class CategoryController extends Notifier<CategoryState> {
       await _repo.create(request);
       await load();
       return true;
-    } catch (e) {
-      state = CategoryError(_parseError(e));
+    } on ApiException catch (e) {
+      state = CategoryError(_messageForApiException(e));
+      return false;
+    } on SocketException {
+      state = const CategoryError('Cannot connect to server.');
+      return false;
+    } catch (_) {
+      state = const CategoryError('An error occurred. Please try again.');
       return false;
     }
   }
@@ -60,8 +73,14 @@ class CategoryController extends Notifier<CategoryState> {
       await _repo.update(id, request);
       await load();
       return true;
-    } catch (e) {
-      state = CategoryError(_parseError(e));
+    } on ApiException catch (e) {
+      state = CategoryError(_messageForApiException(e));
+      return false;
+    } on SocketException {
+      state = const CategoryError('Cannot connect to server.');
+      return false;
+    } catch (_) {
+      state = const CategoryError('An error occurred. Please try again.');
       return false;
     }
   }
@@ -71,20 +90,27 @@ class CategoryController extends Notifier<CategoryState> {
       await _repo.delete(id);
       await load();
       return true;
-    } catch (e) {
-      state = CategoryError(_parseError(e));
+    } on ApiException catch (e) {
+      state = CategoryError(_messageForApiException(e));
+      return false;
+    } on SocketException {
+      state = const CategoryError('Cannot connect to server.');
+      return false;
+    } catch (_) {
+      state = const CategoryError('An error occurred. Please try again.');
       return false;
     }
   }
 
-  String _parseError(Object e) {
-    final msg = e.toString();
-    if (msg.contains('404')) return 'Category not found.';
-    if (msg.contains('401')) return 'Session expired. Please log in again.';
-    if (msg.contains('SocketException') || msg.contains('Connection refused')) {
-      return 'Cannot connect to server.';
+  String _messageForApiException(ApiException e) {
+    switch (e.statusCode) {
+      case 401:
+        return 'Session expired. Please log in again.';
+      case 404:
+        return 'Category not found.';
+      default:
+        return e.message;
     }
-    return 'An error occurred. Please try again.';
   }
 }
 

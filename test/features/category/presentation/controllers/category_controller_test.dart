@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:sultan/core/services/api_client.dart';
 import 'package:sultan/features/category/data/repositories/category_repository.dart';
 import 'package:sultan/features/category/domain/models/category.dart';
 import 'package:sultan/features/category/presentation/controllers/category_controller.dart';
@@ -64,8 +67,8 @@ void main() {
       expect((states[1] as CategoryLoaded).categories, hasLength(2));
     });
 
-    test('transitions to CategoryError on failure', () async {
-      when(() => mockRepo.getAll()).thenThrow(Exception('Connection refused'));
+    test('transitions to CategoryError on generic failure', () async {
+      when(() => mockRepo.getAll()).thenThrow(Exception('unexpected'));
 
       final container = buildContainer();
       addTearDown(container.dispose);
@@ -78,7 +81,7 @@ void main() {
     test('error message for SocketException', () async {
       when(
         () => mockRepo.getAll(),
-      ).thenThrow(Exception('SocketException: Connection refused'));
+      ).thenThrow(const SocketException('Connection refused'));
 
       final container = buildContainer();
       addTearDown(container.dispose);
@@ -86,11 +89,13 @@ void main() {
       await container.read(categoryControllerProvider.notifier).load();
 
       final state = container.read(categoryControllerProvider) as CategoryError;
-      expect(state.message, contains('Cannot connect'));
+      expect(state.message, 'Cannot connect to server.');
     });
 
-    test('error message for 404', () async {
-      when(() => mockRepo.getAll()).thenThrow(Exception('404'));
+    test('error message for ApiException 404', () async {
+      when(
+        () => mockRepo.getAll(),
+      ).thenThrow(ApiException(statusCode: 404, message: 'not found'));
 
       final container = buildContainer();
       addTearDown(container.dispose);
@@ -98,11 +103,13 @@ void main() {
       await container.read(categoryControllerProvider.notifier).load();
 
       final state = container.read(categoryControllerProvider) as CategoryError;
-      expect(state.message, contains('not found'));
+      expect(state.message, 'Category not found.');
     });
 
-    test('error message for 401', () async {
-      when(() => mockRepo.getAll()).thenThrow(Exception('401'));
+    test('error message for ApiException 401', () async {
+      when(
+        () => mockRepo.getAll(),
+      ).thenThrow(ApiException(statusCode: 401, message: 'unauthorized'));
 
       final container = buildContainer();
       addTearDown(container.dispose);
@@ -110,7 +117,21 @@ void main() {
       await container.read(categoryControllerProvider.notifier).load();
 
       final state = container.read(categoryControllerProvider) as CategoryError;
-      expect(state.message, contains('Session expired'));
+      expect(state.message, 'Session expired. Please log in again.');
+    });
+
+    test('error message for other ApiException uses server message', () async {
+      when(
+        () => mockRepo.getAll(),
+      ).thenThrow(ApiException(statusCode: 500, message: 'Internal error'));
+
+      final container = buildContainer();
+      addTearDown(container.dispose);
+
+      await container.read(categoryControllerProvider.notifier).load();
+
+      final state = container.read(categoryControllerProvider) as CategoryError;
+      expect(state.message, 'Internal error');
     });
   });
 
@@ -133,7 +154,9 @@ void main() {
 
     test('returns false and sets error on failure', () async {
       final request = CategoryCreateRequest(name: 'Bad');
-      when(() => mockRepo.create(request)).thenThrow(Exception('Server error'));
+      when(
+        () => mockRepo.create(request),
+      ).thenThrow(ApiException(statusCode: 500, message: 'Server error'));
 
       final container = buildContainer();
       addTearDown(container.dispose);
@@ -144,6 +167,24 @@ void main() {
 
       expect(result, isFalse);
       expect(container.read(categoryControllerProvider), isA<CategoryError>());
+    });
+
+    test('create returns false on SocketException', () async {
+      final request = CategoryCreateRequest(name: 'Fail');
+      when(
+        () => mockRepo.create(request),
+      ).thenThrow(const SocketException('Connection refused'));
+
+      final container = buildContainer();
+      addTearDown(container.dispose);
+
+      final result = await container
+          .read(categoryControllerProvider.notifier)
+          .create(request);
+
+      expect(result, isFalse);
+      final state = container.read(categoryControllerProvider) as CategoryError;
+      expect(state.message, 'Cannot connect to server.');
     });
   });
 
@@ -163,11 +204,11 @@ void main() {
       expect(result, isTrue);
     });
 
-    test('returns false and sets error on failure', () async {
+    test('returns false and sets error on ApiException 404', () async {
       final request = CategoryUpdateRequest(name: 'X');
       when(
         () => mockRepo.update('99', request),
-      ).thenThrow(Exception('Not found 404'));
+      ).thenThrow(ApiException(statusCode: 404, message: 'not found'));
 
       final container = buildContainer();
       addTearDown(container.dispose);
@@ -178,7 +219,7 @@ void main() {
 
       expect(result, isFalse);
       final state = container.read(categoryControllerProvider) as CategoryError;
-      expect(state.message, contains('not found'));
+      expect(state.message, 'Category not found.');
     });
   });
 
@@ -197,10 +238,10 @@ void main() {
       expect(result, isTrue);
     });
 
-    test('returns false and sets error on failure', () async {
+    test('returns false and sets error on SocketException', () async {
       when(
         () => mockRepo.delete('99'),
-      ).thenThrow(Exception('Connection refused SocketException'));
+      ).thenThrow(const SocketException('Connection refused'));
 
       final container = buildContainer();
       addTearDown(container.dispose);
@@ -211,7 +252,7 @@ void main() {
 
       expect(result, isFalse);
       final state = container.read(categoryControllerProvider) as CategoryError;
-      expect(state.message, contains('Cannot connect'));
+      expect(state.message, 'Cannot connect to server.');
     });
   });
 }

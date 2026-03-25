@@ -56,7 +56,7 @@ lib/
 1. **No business logic in widgets.** Controllers manage all state; widgets are dumb.
 2. **Domain models are immutable.** Use `final` fields, `const` constructors, `fromJson` factories, `toJson` methods.
 3. **One feature = one folder** under `lib/features/`. Never mix feature code.
-4. **Use `package:` imports** (not relative) only when crossing feature boundaries. Within a feature, use relative imports.
+4. **Always use `package:` imports** — never use relative path imports (`../`, `./`). This applies everywhere: within a feature, across features, and in tests.
 5. **Repository interfaces** must be the only thing controllers depend on — not `ApiClient` directly.
 6. **Responsive pages** use `ResponsivePage` from `core/widgets/responsive_page.dart`. Breakpoint: 900px.
 
