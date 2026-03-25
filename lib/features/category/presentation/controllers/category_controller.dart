@@ -40,65 +40,45 @@ class CategoryController extends Notifier<CategoryState> {
   Future<void> load() async {
     state = const CategoryLoading();
     try {
-      final categories = await _repo.getAll();
-      state = CategoryLoaded(categories);
-    } on ApiException catch (e) {
-      state = CategoryError(_messageForApiException(e));
-    } on SocketException {
-      state = const CategoryError('Cannot connect to server.');
-    } catch (_) {
-      state = const CategoryError('An error occurred. Please try again.');
+      state = CategoryLoaded(await _repo.getAll());
+    } catch (e) {
+      _handleError(e);
     }
   }
 
-  Future<bool> create(CategoryCreateRequest request) async {
-    try {
-      await _repo.create(request);
-      await load();
-      return true;
-    } on ApiException catch (e) {
-      state = CategoryError(_messageForApiException(e));
-      return false;
-    } on SocketException {
-      state = const CategoryError('Cannot connect to server.');
-      return false;
-    } catch (_) {
-      state = const CategoryError('An error occurred. Please try again.');
-      return false;
-    }
-  }
+  Future<bool> create(CategoryCreateRequest request) => _guard(() async {
+    await _repo.create(request);
+    await load();
+  });
 
-  Future<bool> update(String id, CategoryUpdateRequest request) async {
+  Future<bool> update(String id, CategoryUpdateRequest request) =>
+      _guard(() async {
+        await _repo.update(id, request);
+        await load();
+      });
+
+  Future<bool> delete(String id) => _guard(() async {
+    await _repo.delete(id);
+    await load();
+  });
+
+  Future<bool> _guard(Future<void> Function() action) async {
     try {
-      await _repo.update(id, request);
-      await load();
+      await action();
       return true;
-    } on ApiException catch (e) {
-      state = CategoryError(_messageForApiException(e));
-      return false;
-    } on SocketException {
-      state = const CategoryError('Cannot connect to server.');
-      return false;
-    } catch (_) {
-      state = const CategoryError('An error occurred. Please try again.');
+    } catch (e) {
+      _handleError(e);
       return false;
     }
   }
 
-  Future<bool> delete(String id) async {
-    try {
-      await _repo.delete(id);
-      await load();
-      return true;
-    } on ApiException catch (e) {
+  void _handleError(Object e) {
+    if (e is ApiException) {
       state = CategoryError(_messageForApiException(e));
-      return false;
-    } on SocketException {
+    } else if (e is SocketException) {
       state = const CategoryError('Cannot connect to server.');
-      return false;
-    } catch (_) {
+    } else {
       state = const CategoryError('An error occurred. Please try again.');
-      return false;
     }
   }
 
