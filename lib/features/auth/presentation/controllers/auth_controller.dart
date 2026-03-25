@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../data/repositories/auth_repository.dart';
-import '../../domain/models/login_request.dart';
+import 'package:sultan/core/services/api_client.dart';
+import 'package:sultan/features/auth/data/repositories/auth_repository.dart';
+import 'package:sultan/features/auth/domain/models/login_request.dart';
 
 final authRepositoryProvider = Provider<AuthRepository>(
   (ref) => AuthRepository(),
@@ -33,7 +36,14 @@ class AuthError extends AuthState {
 
 class AuthController extends Notifier<AuthState> {
   @override
-  AuthState build() => const AuthInitial();
+  AuthState build() {
+    // Register forced-logout callback: when the refresh token expires,
+    // the repository clears tokens and notifies us to go back to login.
+    ref.read(authRepositoryProvider).setOnForceLogout(() {
+      state = const AuthUnauthenticated();
+    });
+    return const AuthInitial();
+  }
 
   Future<void> login(String username, String password) async {
     state = const AuthLoading();
@@ -42,8 +52,16 @@ class AuthController extends Notifier<AuthState> {
           .read(authRepositoryProvider)
           .login(LoginRequest(username: username, password: password));
       state = const AuthAuthenticated();
-    } catch (e) {
-      state = AuthError(_parseError(e));
+    } on ApiException catch (e) {
+      state = AuthError(
+        e.statusCode == 401 ? 'Invalid username or password.' : e.message,
+      );
+    } on SocketException {
+      state = const AuthError(
+        'Cannot connect to server. Check the server is running.',
+      );
+    } catch (_) {
+      state = const AuthError('An error occurred. Please try again.');
     }
   }
 
@@ -51,15 +69,6 @@ class AuthController extends Notifier<AuthState> {
     state = const AuthLoading();
     await ref.read(authRepositoryProvider).logout();
     state = const AuthUnauthenticated();
-  }
-
-  String _parseError(Object e) {
-    final msg = e.toString();
-    if (msg.contains('401')) return 'Invalid username or password.';
-    if (msg.contains('SocketException') || msg.contains('Connection refused')) {
-      return 'Cannot connect to server. Check the server is running.';
-    }
-    return 'An error occurred. Please try again.';
   }
 }
 

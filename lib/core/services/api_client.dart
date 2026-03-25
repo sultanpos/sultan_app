@@ -37,6 +37,7 @@ class ApiClient {
   // Called by the auth repository to inject a refresh callback after init,
   // avoiding a circular dependency.
   Future<void> Function()? _onUnauthorized;
+  bool _isRefreshing = false;
 
   void setOnUnauthorized(Future<void> Function() callback) {
     _onUnauthorized = callback;
@@ -60,11 +61,18 @@ class ApiClient {
     _logRequest(method, path, body);
     var response = await fn();
     _logResponse(response);
-    if (response.statusCode == 401 && _onUnauthorized != null) {
+    if (response.statusCode == 401 &&
+        _onUnauthorized != null &&
+        !_isRefreshing) {
       debugPrint(
         '[ApiClient] 401 — refreshing token and retrying $method $path',
       );
-      await _onUnauthorized!();
+      _isRefreshing = true;
+      try {
+        await _onUnauthorized!();
+      } finally {
+        _isRefreshing = false;
+      }
       response = await fn();
       _logResponse(response);
     }

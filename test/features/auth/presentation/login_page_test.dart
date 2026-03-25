@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:sultan/core/services/api_client.dart';
 import 'package:sultan/features/auth/data/repositories/auth_repository.dart';
 import 'package:sultan/features/auth/domain/models/login_request.dart';
 import 'package:sultan/features/auth/domain/models/login_response.dart';
@@ -122,9 +123,10 @@ void main() {
 
   group('LoginPage error display', () {
     testWidgets('shows error banner on failed login', (tester) async {
-      when(
-        () => mockRepo.login(any()),
-      ).thenAnswer((_) async => throw Exception('401 Unauthorized'));
+      when(() => mockRepo.login(any())).thenAnswer(
+        (_) async =>
+            throw ApiException(statusCode: 401, message: 'Unauthorized'),
+      );
 
       await tester.pumpWidget(_buildApp(mockRepo));
       await tester.pumpAndSettle();
