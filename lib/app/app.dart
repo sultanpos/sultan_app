@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/controllers/auth_controller.dart';
 import '../../features/auth/presentation/login_page.dart';
+import '../../features/category/presentation/category_page.dart';
 import '../../features/server/presentation/server_page.dart';
 import '../../features/splash/presentation/splash_page.dart';
 
@@ -13,6 +14,10 @@ final _routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/', builder: (context, state) => const SplashPage()),
       GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
       GoRoute(path: '/home', builder: (context, state) => const ServerPage()),
+      GoRoute(
+        path: '/categories',
+        builder: (context, state) => const CategoryPage(),
+      ),
     ],
     redirect: (context, state) async {
       // Splash handles its own redirect logic; other routes need auth

@@ -2364,13 +2364,9 @@
                         "example": "Electronics"
                     },
                     "parent_id": {
-                        "type": [
-                            "integer",
-                            "null"
-                        ],
-                        "format": "int64",
+                        "type": "string",
                         "description": "Parent category ID (optional, for subcategories)",
-                        "example": 1
+                        "example": "1234567890"
                     }
                 }
             },

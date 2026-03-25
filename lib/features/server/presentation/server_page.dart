@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/services/auth_service.dart';
 import '../../auth/presentation/controllers/auth_controller.dart';
 
 class ServerPage extends ConsumerStatefulWidget {
@@ -34,9 +35,10 @@ class _ServerPageState extends ConsumerState<ServerPage> {
   Future<void> _startServer() async {
     setState(() => _loading = true);
     try {
+      final jwtSecret = await AuthService.instance.getOrCreateJwtSecret();
       final started =
           await _channel.invokeMethod<bool>('start', {
-            'jwtSecret': 'sultan-secret-key',
+            'jwtSecret': jwtSecret,
             'port': 8721,
           }) ??
           false;
@@ -136,6 +138,22 @@ class _ServerPageState extends ConsumerState<ServerPage> {
                       : (_running ? 'Stop Server' : 'Start Server'),
                 ),
               ),
+            ),
+            const SizedBox(height: 32),
+            const Divider(indent: 48, endIndent: 48),
+            const SizedBox(height: 16),
+            Text(
+              'Manage',
+              style: Theme.of(
+                context,
+              ).textTheme.labelMedium?.copyWith(color: Colors.grey),
+            ),
+            const SizedBox(height: 8),
+            ListTile(
+              leading: const Icon(Icons.category_outlined),
+              title: const Text('Categories'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.push('/categories'),
             ),
           ],
         ),

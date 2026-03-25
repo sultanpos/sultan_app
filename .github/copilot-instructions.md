@@ -56,7 +56,7 @@ lib/
 1. **No business logic in widgets.** Controllers manage all state; widgets are dumb.
 2. **Domain models are immutable.** Use `final` fields, `const` constructors, `fromJson` factories, `toJson` methods.
 3. **One feature = one folder** under `lib/features/`. Never mix feature code.
-4. **Use `package:` imports** (not relative) only when crossing feature boundaries. Within a feature, use relative imports.
+4. **Always use `package:` imports** — never use relative path imports (`../`, `./`). This applies everywhere: within a feature, across features, and in tests.
 5. **Repository interfaces** must be the only thing controllers depend on — not `ApiClient` directly.
 6. **Responsive pages** use `ResponsivePage` from `core/widgets/responsive_page.dart`. Breakpoint: 900px.
 
@@ -180,6 +180,57 @@ Default credentials: username `sultan`, password `sultan`.
 
 ---
 
+## Testing
+
+All new code must have **>80% test coverage**. Tests live under `test/` mirroring the `lib/` structure.
+
+### Test file locations
+
+| Source file | Test file |
+|---|---|
+| `lib/features/<name>/domain/models/<model>.dart` | `test/features/<name>/domain/models/<model>_test.dart` |
+| `lib/features/<name>/data/repositories/<name>_repository.dart` | `test/features/<name>/data/repositories/<name>_repository_test.dart` |
+| `lib/features/<name>/presentation/controllers/<name>_controller.dart` | `test/features/<name>/presentation/controllers/<name>_controller_test.dart` |
+| `lib/features/<name>/presentation/<name>_page.dart` | `test/features/<name>/presentation/<name>_page_test.dart` |
+| `lib/core/...` | `test/core/...` |
+
+### What to test per layer
+
+- **Models**: `fromJson` round-trip, optional fields, edge cases.
+- **Repositories**: mock `ApiClient` (via constructor injection) — test success path, `ApiException` handling.
+- **Controllers**: override the repository provider — test each state transition (`Initial → Loading → Loaded`, error path).
+- **Pages**: pump with `ProviderScope` overrides — assert key widgets render for each state.
+
+### Mocking conventions
+
+- Use `mocktail` — no code generation required.
+- Mock `http.Client` via `package:http/testing.dart` `MockClient` for `ApiClient` tests.
+- Inject dependencies via constructor (all repositories and `ApiClient`/`AuthService` support this).
+
+```dart
+// Repository test pattern
+final mockClient = MockApiClient();
+final repo = FeatureRepository(apiClient: mockClient);
+
+// Controller test pattern
+final container = ProviderContainer(
+  overrides: [featureRepositoryProvider.overrideWithValue(mockRepo)],
+);
+addTearDown(container.dispose);
+```
+
+### Running tests with coverage
+
+```bash
+flutter test --coverage
+# Check coverage for a specific file:
+genhtml coverage/lcov.info -o coverage/html && open coverage/html/index.html
+```
+
+CI enforces coverage via SonarQube — the gate fails if new code drops below 80%.
+
+---
+
 ## Code Quality Rule
 
 After **every** file modification, always run:
@@ -200,4 +251,10 @@ Fix all reported issues before considering the change done. This catches lint wa
 4. Create `lib/features/<name>/presentation/controllers/<name>_controller.dart` — `Notifier` with sealed state.
 5. Create `lib/features/<name>/presentation/<name>_page.dart` — uses `ResponsivePage` if needed.
 6. Add route to `GoRouter` in `lib/app/app.dart`.
-7. Run `flutter analyze --fatal-infos` and fix any issues.
+7. Write tests (see **Testing** section above):
+   - `test/features/<name>/domain/models/<model>_test.dart` — model `fromJson`/`toJson`.
+   - `test/features/<name>/data/repositories/<name>_repository_test.dart` — success + error paths.
+   - `test/features/<name>/presentation/controllers/<name>_controller_test.dart` — all state transitions.
+   - `test/features/<name>/presentation/<name>_page_test.dart` — key widget assertions per state.
+8. Run `flutter test --coverage` and verify >80% coverage on new files.
+9. Run `flutter analyze --fatal-infos` and fix any issues.
