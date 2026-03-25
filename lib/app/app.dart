@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sultan/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:sultan/features/auth/presentation/login_page.dart';
 import 'package:sultan/features/category/presentation/category_page.dart';
+import 'package:sultan/features/configuration/presentation/configuration_page.dart';
 import 'package:sultan/features/server/presentation/server_page.dart';
 import 'package:sultan/features/splash/presentation/splash_page.dart';
 
@@ -12,6 +13,10 @@ final _routerProvider = Provider<GoRouter>((ref) {
     initialLocation: '/',
     routes: [
       GoRoute(path: '/', builder: (context, state) => const SplashPage()),
+      GoRoute(
+        path: '/configuration',
+        builder: (context, state) => const ConfigurationPage(),
+      ),
       GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
       GoRoute(path: '/home', builder: (context, state) => const ServerPage()),
       GoRoute(
@@ -21,7 +26,9 @@ final _routerProvider = Provider<GoRouter>((ref) {
     ],
     redirect: (context, state) async {
       // Splash handles its own redirect logic; other routes need auth
-      if (state.matchedLocation == '/' || state.matchedLocation == '/login') {
+      if (state.matchedLocation == '/' ||
+          state.matchedLocation == '/login' ||
+          state.matchedLocation == '/configuration') {
         return null;
       }
       final authState = ProviderScope.containerOf(

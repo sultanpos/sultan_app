@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/services/auth_service.dart';
+import 'package:sultan/core/constants/api_constants.dart';
+import 'package:sultan/core/services/auth_service.dart';
+import 'package:sultan/features/configuration/data/configuration_service.dart';
+import 'package:sultan/features/configuration/domain/models/app_configuration.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -20,8 +23,28 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   Future<void> _initialize() async {
-    await _startServerIfAndroid();
+    // Check if the app has been configured
+    final configService = ConfigurationService.instance;
+    final isConfigured = await configService.isConfigured();
     if (!mounted) return;
+
+    if (!isConfigured) {
+      context.go('/configuration');
+      return;
+    }
+
+    // Apply saved configuration
+    final config = await configService.getConfiguration();
+    if (!mounted) return;
+
+    if (config != null) {
+      ApiConstants.setBaseUrl(config.baseUrl);
+      if (config.mode == ServerMode.standalone) {
+        await _startServerIfAndroid();
+        if (!mounted) return;
+      }
+    }
+
     final hasTokens = await AuthService.instance.hasTokens();
     if (!mounted) return;
     if (hasTokens) {
