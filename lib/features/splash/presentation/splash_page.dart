@@ -33,8 +33,9 @@ class _SplashPageState extends State<SplashPage> {
 
   Future<void> _startServerIfAndroid() async {
     try {
+      final jwtSecret = await AuthService.instance.getOrCreateJwtSecret();
       final started = await _serverChannel.invokeMethod<bool>('start', {
-        'jwtSecret': 'sultan-secret-key',
+        'jwtSecret': jwtSecret,
         'port': 8721,
       });
       if (started == true) {

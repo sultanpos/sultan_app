@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -20,6 +22,7 @@ class AuthService {
 
   static const _accessTokenKey = 'access_token';
   static const _refreshTokenKey = 'refresh_token';
+  static const _jwtSecretKey = 'jwt_secret';
 
   final FlutterSecureStorage _storage;
   final Map<String, String> _memoryFallback = {};
@@ -64,5 +67,25 @@ class AuthService {
       _storage.delete(key: _accessTokenKey),
       _storage.delete(key: _refreshTokenKey),
     ]);
+  }
+
+  /// Returns the persisted JWT secret, or generates and persists a new one.
+  Future<String> getOrCreateJwtSecret() async {
+    final existing = kIsWeb
+        ? _memoryFallback[_jwtSecretKey]
+        : await _storage.read(key: _jwtSecretKey);
+
+    if (existing != null && existing.isNotEmpty) return existing;
+
+    // Generate a 32-byte (256-bit) cryptographically random secret.
+    final bytes = List<int>.generate(32, (_) => Random.secure().nextInt(256));
+    final secret = base64UrlEncode(bytes);
+
+    if (kIsWeb) {
+      _memoryFallback[_jwtSecretKey] = secret;
+    } else {
+      await _storage.write(key: _jwtSecretKey, value: secret);
+    }
+    return secret;
   }
 }

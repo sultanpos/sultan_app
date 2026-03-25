@@ -119,4 +119,82 @@ void main() {
       verify(() => mockStorage.delete(key: 'refresh_token')).called(1);
     });
   });
+
+  group('AuthService.getOrCreateJwtSecret', () {
+    test('returns existing secret from storage without writing', () async {
+      when(
+        () => mockStorage.read(key: 'jwt_secret'),
+      ).thenAnswer((_) async => 'existingSecret');
+
+      final secret = await service.getOrCreateJwtSecret();
+
+      expect(secret, 'existingSecret');
+      verifyNever(
+        () => mockStorage.write(
+          key: any(named: 'key'),
+          value: any(named: 'value'),
+        ),
+      );
+    });
+
+    test('generates and persists a new secret when storage is empty', () async {
+      when(
+        () => mockStorage.read(key: 'jwt_secret'),
+      ).thenAnswer((_) async => null);
+      when(
+        () => mockStorage.write(
+          key: any(named: 'key'),
+          value: any(named: 'value'),
+        ),
+      ).thenAnswer((_) async {});
+
+      final secret = await service.getOrCreateJwtSecret();
+
+      expect(secret, isNotEmpty);
+      verify(
+        () => mockStorage.write(key: 'jwt_secret', value: secret),
+      ).called(1);
+    });
+
+    test('generates different secrets on separate instances', () async {
+      final service2 = AuthService.withStorage(mockStorage);
+      when(
+        () => mockStorage.read(key: 'jwt_secret'),
+      ).thenAnswer((_) async => null);
+      when(
+        () => mockStorage.write(
+          key: any(named: 'key'),
+          value: any(named: 'value'),
+        ),
+      ).thenAnswer((_) async {});
+
+      final secret1 = await service.getOrCreateJwtSecret();
+      final secret2 = await service2.getOrCreateJwtSecret();
+
+      // Both are non-empty; since they are randomly generated they should differ
+      expect(secret1, isNotEmpty);
+      expect(secret2, isNotEmpty);
+      expect(secret1, isNot(equals(secret2)));
+    });
+
+    test(
+      'generated secret is base64url-encoded 32 bytes (43 chars + padding)',
+      () async {
+        when(
+          () => mockStorage.read(key: 'jwt_secret'),
+        ).thenAnswer((_) async => null);
+        when(
+          () => mockStorage.write(
+            key: any(named: 'key'),
+            value: any(named: 'value'),
+          ),
+        ).thenAnswer((_) async {});
+
+        final secret = await service.getOrCreateJwtSecret();
+
+        // base64url of 32 bytes is 44 chars with padding or 43 without
+        expect(secret.length, greaterThanOrEqualTo(43));
+      },
+    );
+  });
 }
