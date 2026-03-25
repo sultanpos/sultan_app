@@ -2,20 +2,26 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AuthService {
-  AuthService._();
+  AuthService._([FlutterSecureStorage? storage])
+    : _storage =
+          storage ??
+          const FlutterSecureStorage(
+            aOptions: AndroidOptions(encryptedSharedPreferences: true),
+          );
 
   static final _instance = AuthService._();
   static AuthService get instance => _instance;
 
+  /// Creates a non-singleton instance with an injected [FlutterSecureStorage].
+  /// Use only in tests.
+  @visibleForTesting
+  static AuthService withStorage(FlutterSecureStorage storage) =>
+      AuthService._(storage);
+
   static const _accessTokenKey = 'access_token';
   static const _refreshTokenKey = 'refresh_token';
 
-  // Web uses in-memory fallback since flutter_secure_storage web support
-  // requires additional setup.
-  final FlutterSecureStorage _storage = const FlutterSecureStorage(
-    aOptions: AndroidOptions(encryptedSharedPreferences: true),
-  );
-
+  final FlutterSecureStorage _storage;
   final Map<String, String> _memoryFallback = {};
 
   Future<void> saveTokens({

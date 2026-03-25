@@ -63,12 +63,12 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Build APK (debug)
-        run: flutter build apk --debug
+      - name: Build APK (release)
+        run: flutter build apk --release
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: sultan-debug-${{ github.sha }}
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          name: sultan-release-${{ github.sha }}
+          path: build/app/outputs/flutter-apk/app-release.apk
           retention-days: 14
