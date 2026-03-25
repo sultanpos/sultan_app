@@ -20,6 +20,7 @@ void main() {
 
   setUp(() {
     mockRepo = MockAuthRepository();
+    when(() => mockRepo.setOnForceLogout(any())).thenAnswer((_) {});
   });
 
   ProviderContainer buildContainer() => ProviderContainer(
@@ -154,5 +155,33 @@ void main() {
 
       verify(() => mockRepo.logout()).called(1);
     });
+  });
+
+  group('AuthController forced logout (token expiry)', () {
+    test(
+      'transitions to AuthUnauthenticated when repository fires onForceLogout',
+      () {
+        void Function()? capturedCallback;
+        when(() => mockRepo.setOnForceLogout(any())).thenAnswer((inv) {
+          capturedCallback = inv.positionalArguments[0] as void Function();
+        });
+
+        final container = buildContainer();
+        addTearDown(container.dispose);
+
+        // Reading the provider triggers build(), which calls setOnForceLogout
+        container.read(authControllerProvider);
+
+        expect(capturedCallback, isNotNull);
+
+        // Simulate the repository firing the forced-logout callback
+        capturedCallback!();
+
+        expect(
+          container.read(authControllerProvider),
+          isA<AuthUnauthenticated>(),
+        );
+      },
+    );
   });
 }

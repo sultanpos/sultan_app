@@ -173,5 +173,73 @@ void main() {
 
       verify(() => freshAuthService.clearTokens()).called(1);
     });
+
+    test(
+      'refresh clears tokens and calls onForceLogout when POST fails',
+      () async {
+        final freshClient = MockApiClient();
+        final freshAuthService = MockAuthService();
+        late Future<void> Function() capturedRefresh;
+
+        when(() => freshClient.setOnUnauthorized(any())).thenAnswer((inv) {
+          capturedRefresh =
+              inv.positionalArguments[0] as Future<void> Function();
+        });
+
+        var forceLogoutCalled = false;
+        final repo = AuthRepository(
+          apiClient: freshClient,
+          authService: freshAuthService,
+        )..setOnForceLogout(() => forceLogoutCalled = true);
+
+        when(
+          () => freshAuthService.getRefreshToken(),
+        ).thenAnswer((_) async => 'expiredRefresh');
+        when(
+          () => freshClient.post(
+            ApiConstants.refreshPath,
+            body: any(named: 'body'),
+          ),
+        ).thenThrow(
+          const ApiException(statusCode: 401, message: 'Unauthorized'),
+        );
+        when(() => freshAuthService.clearTokens()).thenAnswer((_) async {});
+
+        await capturedRefresh();
+
+        verify(() => freshAuthService.clearTokens()).called(1);
+        expect(forceLogoutCalled, isTrue);
+
+        // keep repo reference alive until after await
+        expect(repo, isNotNull);
+      },
+    );
+
+    test('refresh does not call onForceLogout when not registered', () async {
+      final freshClient = MockApiClient();
+      final freshAuthService = MockAuthService();
+      late Future<void> Function() capturedRefresh;
+
+      when(() => freshClient.setOnUnauthorized(any())).thenAnswer((inv) {
+        capturedRefresh = inv.positionalArguments[0] as Future<void> Function();
+      });
+
+      // No setOnForceLogout call — should not throw
+      AuthRepository(apiClient: freshClient, authService: freshAuthService);
+
+      when(
+        () => freshAuthService.getRefreshToken(),
+      ).thenAnswer((_) async => 'oldRefresh');
+      when(
+        () => freshClient.post(
+          ApiConstants.refreshPath,
+          body: any(named: 'body'),
+        ),
+      ).thenThrow(const ApiException(statusCode: 401, message: 'Unauthorized'));
+      when(() => freshAuthService.clearTokens()).thenAnswer((_) async {});
+
+      await expectLater(capturedRefresh(), completes);
+      verify(() => freshAuthService.clearTokens()).called(1);
+    });
   });
 }
