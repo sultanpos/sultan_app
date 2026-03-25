@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -151,7 +152,7 @@ void main() {
   testWidgets('shows error message and retry button on error', (tester) async {
     when(
       () => mockRepo.getAll(),
-    ).thenThrow(Exception('SocketException: Connection refused'));
+    ).thenThrow(const SocketException('Connection refused'));
 
     await tester.pumpWidget(buildApp());
     await tester.pumpAndSettle();
@@ -164,7 +165,7 @@ void main() {
     var callCount = 0;
     when(() => mockRepo.getAll()).thenAnswer((_) async {
       callCount++;
-      throw Exception('SocketException: Connection refused');
+      throw const SocketException('Connection refused');
     });
 
     await tester.pumpWidget(buildApp());
