@@ -9,7 +9,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
-import com.sultan.android.SultanServer
+import com.lekapin.sultan.SultanServer
 
 class SultanServerService : Service() {
 

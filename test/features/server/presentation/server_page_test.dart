@@ -36,7 +36,7 @@ void main() {
     // Silence the MethodChannel — MissingPluginException is caught in _checkStatus
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(
-          const MethodChannel('com.sultan.android/server'),
+          const MethodChannel('com.lekapin.sultan/server'),
           null,
         );
   });
@@ -70,7 +70,7 @@ void main() {
     setUp(() {
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(
-            const MethodChannel('com.sultan.android/server'),
+            const MethodChannel('com.lekapin.sultan/server'),
             (call) async {
               if (call.method == 'isRunning') return true;
               if (call.method == 'start') return true;
@@ -83,7 +83,7 @@ void main() {
     tearDown(() {
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(
-            const MethodChannel('com.sultan.android/server'),
+            const MethodChannel('com.lekapin.sultan/server'),
             null,
           );
     });

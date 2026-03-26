@@ -14,7 +14,7 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
-  static const _serverChannel = MethodChannel('com.sultan.android/server');
+  static const _serverChannel = MethodChannel('com.lekapin.sultan/server');
 
   @override
   void initState() {

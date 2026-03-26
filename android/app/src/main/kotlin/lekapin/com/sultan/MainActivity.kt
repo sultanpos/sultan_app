@@ -4,10 +4,10 @@ import android.content.Intent
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
-import com.sultan.android.SultanServer
+import com.lekapin.sultan.SultanServer
 
 class MainActivity : FlutterActivity() {
-    private val channel = "com.sultan.android/server"
+    private val channel = "com.lekapin.sultan/server"
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)

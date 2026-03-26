@@ -1,4 +1,4 @@
-package com.sultan.android
+package com.lekapin.sultan
 
 object SultanServer {
 
