@@ -13,7 +13,7 @@ class ServerPage extends ConsumerStatefulWidget {
 }
 
 class _ServerPageState extends ConsumerState<ServerPage> {
-  static const _channel = MethodChannel('com.sultan.android/server');
+  static const _channel = MethodChannel('com.lekapin.sultan/server');
   bool _running = false;
   bool _loading = false;
 
